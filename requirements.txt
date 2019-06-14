@@ -1,0 +1,5 @@
+lxml
+paho-mqtt
+influxdb
+rfc3339
+simplejson
