@@ -9,7 +9,7 @@
 #
 #  SPDX-License-Identifier: EPL-2.0
 #
-#  Contributors: Fraunhofer IEM
+#  Contributors: Daniel Siegel @ Fraunhofer IEM
 # *****************************************************************************
 
 
