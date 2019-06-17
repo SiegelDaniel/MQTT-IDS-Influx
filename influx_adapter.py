@@ -18,7 +18,7 @@
 #https://www.python.org/dev/peps/pep-0008/
 from influxdb import InfluxDBClient
 import paho.mqtt.client as mqtt
-
+import simplejson
 
 class InfluxAdapter():
     '''Adapter to pipe results from MQTT IDS to InfluxDB for visualization purposes'''
@@ -31,6 +31,7 @@ class InfluxAdapter():
 
     def on_message(self,client,userdata,msg):
         '''Handles incoming MQTT messages'''
+        datadict = simplejson.loads(msg)
 
 
     def jsonify(data):

@@ -23,7 +23,7 @@ import simplejson
 
 class SyscallFormatter(object):
     
-    def __init__(self,BROKER_IP):
+    def __init__(self,BROKER_IP="test.mosquitto.org"):
         '''Takes BROKER IP as string as argument'''
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect

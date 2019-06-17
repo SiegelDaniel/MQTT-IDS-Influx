@@ -23,10 +23,12 @@ import threading
 from datetime import datetime
 import rfc3339
 import simplejson
+import psutil
+
 
 class SyscallTracer(object):
 
-    def __init__(self,PID,PNAME,BROKER_IP):
+    def __init__(self,PID,PNAME="",BROKER_IP="test.mosquitto.org"):
         self.PID = PID
         self.PNAME = PNAME
         self.BROKER_IP = BROKER_IP
@@ -41,6 +43,7 @@ class SyscallTracer(object):
 
         if self.PID != "" and self.PNAME == "":
             self.trace_by_pid()
+            self.PNAME = get_process_name(self.PID)
         elif self.PID == "" and self.PNAME != "":
             self.trace_by_process()
         else:
@@ -69,6 +72,11 @@ class SyscallTracer(object):
         proc.stdout.close()
         proc.wait()
 
+    def get_process_name(self,pid):
+        process = psutil.Process(pid)
+        process_name = process.name()
+        return process_name
+
     def trace_by_process(self):
         self.PID = self.find_pids()
         self.trace_by_pid()
@@ -77,7 +85,8 @@ class SyscallTracer(object):
         date_string = rfc3339.rfc3339(datetime.now())
         datadict = {
             'timestamp' : date_string,
-            'data' : trace
+            'data' : trace,
+            'processname': self.PNAME
         }
 
         self.client.publish('TRACED',simplejson.dumps(datadict))
