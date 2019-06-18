@@ -29,9 +29,35 @@ class InfluxAdapter():
     def main(self):
         self.client.switch_database('Traces')
 
+
     def on_message(self,client,userdata,msg):
         '''Handles incoming MQTT messages'''
         datadict = simplejson.loads(msg)
 
+        timestamp = datadict['timestamp']
+        data = datadict['data']
+        processname = datadict['processname']
 
-    def jsonify(data):
+        datapoint = self.create_json_dict(timestamp,data,processname,'traces')
+        self.insert([datapoint])
+
+
+    def create_json_dict(self,timestamp,data,processname,measurement):
+        '''Creates a json style dict as a datapoint to be inserted'''
+        tags = {'processname':processname}
+        fields = {'systemcall':data}
+        body   = {'measurement':measurement,
+                  'tags':tags,
+                  'time':timestamp,
+                  'fields':fields}
+        return body
+        
+
+    def insert(self,datapoints):
+        '''Takes a list of datapoints created via create_json_dict()
+           Inserts these into the InfluxDB.'''
+        if self.client.write_points(datapoints) == True:
+            pass #successfull insert
+        else:
+            print("Something went wrong")
+
