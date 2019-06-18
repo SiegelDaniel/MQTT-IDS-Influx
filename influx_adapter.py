@@ -22,11 +22,17 @@ import simplejson
 
 class InfluxAdapter():
     '''Adapter to pipe results from MQTT IDS to InfluxDB for visualization purposes'''
-    def __init__(self):
+    def __init__(self,BROKER_IP='test.mosquitto.org'):
+        self.BROKER_IP = BROKER_IP
+
         self.client = InfluxDBClient(host='68.183.66.50',port=8086)
 
+        self.mqtt_client = mqtt.Client()
+        try:
+            self.mqtt_client.connect(self.BROKER_IP)
+        except Exception:
+            raise SystemExit(0)
 
-    def main(self):
         self.client.switch_database('Traces')
 
 
@@ -44,7 +50,7 @@ class InfluxAdapter():
 
     def create_json_dict(self,timestamp,data,processname,measurement):
         '''Creates a json style dict as a datapoint to be inserted'''
-        tags = {'processname':processname}
+        tags   = {'processname':processname}
         fields = {'systemcall':data}
         body   = {'measurement':measurement,
                   'tags':tags,

@@ -43,7 +43,7 @@ class SyscallTracer(object):
 
         if self.PID != "" and self.PNAME == "":
             self.trace_by_pid()
-            self.PNAME = get_process_name(self.PID)
+            self.PNAME = self.get_process_name(self.PID)
         elif self.PID == "" and self.PNAME != "":
             self.trace_by_process()
         else:
