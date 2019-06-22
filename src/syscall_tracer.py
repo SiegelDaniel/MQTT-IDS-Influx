@@ -42,7 +42,10 @@ class SyscallTracer(object):
 
         if self.PID != "" and self.PNAME == "":
             self.trace_by_pid()
-            self.PNAME = self.get_process_name(self.PID)
+            try:
+                self.PNAME = self.get_process_name(self.PID)
+            except Exception:
+                print("PNAME assertion failed.")
         elif self.PID == "" and self.PNAME != "":
             self.trace_by_process()
         else:
@@ -76,13 +79,14 @@ class SyscallTracer(object):
         proc.wait()
 
     def get_process_name(self,pid):
-        process = psutil.Process(pid)
+        process = psutil.Process(int(pid))
         process_name = process.name()
         return process_name
 
     def trace_by_process(self):
         self.PID = self.find_pids()
         self.trace_by_pid()
+        
 
     def send_trace(self,trace):
         date_string = rfc3339.rfc3339(datetime.now())
