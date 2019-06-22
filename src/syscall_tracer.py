@@ -41,6 +41,7 @@ class SyscallTracer(object):
             raise SystemExit(0)
 
         if self.PID != "" and self.PNAME == "":
+            print("Tracing by PID")
             self.trace_by_pid()
             try:
                 self.PNAME = self.get_process_name(self.PID)
