@@ -63,5 +63,5 @@ class SyscallFormatter(object):
 
 
 if __name__ == "__main__":
-     SyscallFormatter =  SyscallFormatter("./config.xml")
+     SyscallFormatter =  SyscallFormatter("test.mosquitto.org")
         

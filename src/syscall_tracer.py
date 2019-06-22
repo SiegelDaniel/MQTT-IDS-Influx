@@ -37,9 +37,8 @@ class SyscallTracer(object):
         try:
             self.client.connect(self.BROKER_IP)
         except Exception:
+            print("Connection to MQTT broker failed.")
             raise SystemExit(0)
-
-        self.client.loop_start()
 
         if self.PID != "" and self.PNAME == "":
             self.trace_by_pid()
@@ -47,7 +46,10 @@ class SyscallTracer(object):
         elif self.PID == "" and self.PNAME != "":
             self.trace_by_process()
         else:
+            print("No PNAME or PID found")
             raise SystemExit(1)
+
+        self.client.loop_start()
 
     def find_pids(self):
         import os
@@ -55,6 +57,7 @@ class SyscallTracer(object):
         try:
             process_ids =  [proc.pid for proc in psutil.process_iter() if proc.name() == self.PNAME]
         except:
+            print("Process resolution failed.")
             raise SystemExit(0)
         if len(process_ids) > 0:
             return process_ids[0] 
@@ -91,4 +94,5 @@ class SyscallTracer(object):
 
         self.client.publish('TRACED',simplejson.dumps(datadict))
 
-
+if __name__ == "__main__":
+    Tracer = SyscallTracer("1","","test.mosquitto.org")
