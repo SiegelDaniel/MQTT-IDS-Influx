@@ -26,14 +26,17 @@ class InfluxAdapter():
         self.BROKER_IP = BROKER_IP
 
         self.client = InfluxDBClient(host='68.183.66.50',port=8086)
+        self.client.switch_database('Traces')
 
         self.mqtt_client = mqtt.Client()
         try:
             self.mqtt_client.connect(self.BROKER_IP)
         except Exception:
+            print("Cant establish MQTT connection")
             raise SystemExit(0)
+        self.mqtt_client.on_message = self.on_message
 
-        self.client.switch_database('Traces')
+        
 
 
     def on_message(self,client,userdata,msg):
@@ -67,3 +70,6 @@ class InfluxAdapter():
         else:
             print("Something went wrong")
 
+
+if __name__ == "__main__"":
+    adapter = InfluxAdapter("test.mosquitto.org")
