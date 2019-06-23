@@ -53,14 +53,17 @@ class SyscallFormatter(object):
     
     
     def on_connect(self,client,userdata,flags,rc):
+        print("Subscribing to TRACED")
         self.client.subscribe("TRACED") 
 
     def parse(self,data):
+        print("New message")
         split_msg = data.split("(", 1)[0]
         split_msg = split_msg.split(" ",1)[1]
         return split_msg
 
     def publish(self,topic,data):
+        print("Publishing parsed message")
         """Using the paho mqtt implementation, publish trace on a certain topic."""
         self.client.publish(topic,data)
 
