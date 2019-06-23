@@ -36,7 +36,7 @@ class SyscallFormatter(object):
         try:
             self.client.loop_start()
         except Exception as e:
-            print(e.message())
+            print(str(e))
             print("Client loop failed to start.")
 
         
