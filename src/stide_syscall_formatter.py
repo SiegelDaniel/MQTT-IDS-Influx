@@ -32,9 +32,7 @@ class SyscallFormatter(object):
             self.client.connect(BROKER_IP)
         except Exception:
             raise SystemExit(0)
-
-        self.client.on_message = self.on_message
-        self.client.on_connect = self.on_connect
+        print("Starting syscall-formatter MQTT client loop.")
         self.client.loop_start()
         
 
