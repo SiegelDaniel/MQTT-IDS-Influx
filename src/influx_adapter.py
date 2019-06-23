@@ -68,6 +68,5 @@ class InfluxAdapter():
         else:
             print("Something went wrong")
 
-
-if __name__ == "__main__"":
+if __name__ == "__main__":
     adapter = InfluxAdapter("test.mosquitto.org")
