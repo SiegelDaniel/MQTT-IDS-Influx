@@ -35,7 +35,7 @@ class InfluxAdapter():
             print("Cant establish MQTT connection")
             raise SystemExit(0)
         self.mqtt_client.on_message = self.on_message
-        self.mqtt_client.loop_start()
+        self.mqtt_client.loop_forever()
 
     def on_message(self,client,userdata,msg):
         '''Handles incoming MQTT messages'''
