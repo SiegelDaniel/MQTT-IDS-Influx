@@ -35,7 +35,7 @@ class SyscallFormatter(object):
             raise SystemExit(0)
         print("Starting syscall-formatter MQTT client loop.")
         try:
-            self.client.loop_start()
+            self.client.loop_forever()
         except Exception as e:
             print(str(e))
             print("Client loop failed to start.")
