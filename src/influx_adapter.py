@@ -31,6 +31,7 @@ class InfluxAdapter():
         self.mqtt_client = mqtt.Client()
         try:
             self.mqtt_client.connect(self.BROKER_IP)
+            self.mqtt_client.subscribe("REFINED")
         except Exception:
             print("Cant establish MQTT connection")
             raise SystemExit(0)
