@@ -44,6 +44,7 @@ class SyscallFormatter(object):
 
     def on_message(self,client,userdata,msg):
         """MQTT Callback function for handling received messages"""
+        print("Got message {0}".format(str(msg)))
         datadict = simplejson.loads(msg)
 
         temp = self.parse(datadict['data'])
