@@ -90,6 +90,7 @@ class SyscallTracer(object):
         
 
     def send_trace(self,trace):
+        print("Sending trace {0}".format(trace))
         date_string = rfc3339.rfc3339(datetime.now())
         datadict = {
             'timestamp' : date_string,

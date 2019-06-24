@@ -64,7 +64,7 @@ class InfluxAdapter():
         '''Takes a list of datapoints created via create_json_dict()
            Inserts these into the InfluxDB.'''
         if self.client.write_points(datapoints) == True:
-            pass #successfull insert
+            print("Inserted for process {0} syscall {1} with time {2}".format(datapoints['processname'],datapoints['systemcall'],datapoints['time']))            
         else:
             print("Something went wrong")
 
