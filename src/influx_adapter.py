@@ -31,11 +31,12 @@ class InfluxAdapter():
         self.mqtt_client = mqtt.Client()
         try:
             self.mqtt_client.connect(self.BROKER_IP)
-            self.mqtt_client.subscribe("REFINED")
+            
         except Exception:
             print("Cant establish MQTT connection")
             raise SystemExit(0)
         self.mqtt_client.on_message = self.on_message
+        self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.loop_forever()
 
     def on_message(self,client,userdata,msg):
@@ -61,6 +62,9 @@ class InfluxAdapter():
                   'fields':fields}
         return body
         
+    def on_connect(self,client,userdata,flags,rc):
+        print("Subscribing to REFINED")
+        self.client.subscribe("REFINED") 
 
     def insert(self,datapoints):
         '''Takes a list of datapoints created via create_json_dict()
