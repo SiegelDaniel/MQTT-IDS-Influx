@@ -64,7 +64,7 @@ class InfluxAdapter():
         
     def on_connect(self,client,userdata,flags,rc):
         print("Subscribing to REFINED")
-        self.client.subscribe("REFINED") 
+        self.mqtt_client.subscribe("REFINED") 
 
     def insert(self,datapoints):
         '''Takes a list of datapoints created via create_json_dict()
