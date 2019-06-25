@@ -19,7 +19,7 @@
 
 import paho.mqtt.client as mqtt
 import time
-import simplejson
+import json
 
 class SyscallFormatter(object):
     
@@ -32,6 +32,7 @@ class SyscallFormatter(object):
             self.client.connect(BROKER_IP)
             print("Connected to Broker at {0}".format(BROKER_IP))
         except Exception:
+            print("BROKER connection failed")
             raise SystemExit(0)
         print("Starting syscall-formatter MQTT client loop.")
         try:
@@ -44,16 +45,19 @@ class SyscallFormatter(object):
 
     def on_message(self,client,userdata,msg):
         """MQTT Callback function for handling received messages"""
-        print("Got message {0}".format(str(msg)))
-        datadict = simplejson.loads(msg)
+        try:
+            #payload is bytes array, decode using utf-8
+            decoded_msg  = str(msg.payload,'utf-8')
+            datadict = json.loads(decoded_msg)
 
-        temp = self.parse(datadict['data'])
-        datadict['data'] = temp
+            temp = self.parse(datadict['data'])
+            datadict['data'] = temp
 
-        json = simplejson.dumps(datadict)
-        print("Publishing message")
-        self.client.publish("REFINED",json)
-        print("Published message on refined")
+            json = json.dumps(datadict)
+            self.client.publish("REFINED",json)
+        except Exception as e:
+            print("Couldn't decode message, check error {0}".format(type(e)))
+        
     
     
     def on_connect(self,client,userdata,flags,rc):
@@ -69,7 +73,10 @@ class SyscallFormatter(object):
     def publish(self,topic,data):
         print("Publishing parsed message")
         """Using the paho mqtt implementation, publish trace on a certain topic."""
-        self.client.publish(topic,data)
+        try:
+            self.client.publish(topic,data)
+        except Exception as e:
+            print("Failed to publish message with the following error {0}".format(e.message))
 
 
 if __name__ == "__main__":
