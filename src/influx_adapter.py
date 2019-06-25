@@ -29,14 +29,15 @@ class InfluxAdapter():
         self.client.switch_database('Traces')
 
         self.mqtt_client = mqtt.Client()
+        self.mqtt_client.on_message = self.on_message
+        self.mqtt_client.on_connect = self.on_connect
         try:
             self.mqtt_client.connect(self.BROKER_IP)
             
         except Exception:
             print("Cant establish MQTT connection")
             raise SystemExit(0)
-        self.mqtt_client.on_message = self.on_message
-        self.mqtt_client.on_connect = self.on_connect
+        
         self.mqtt_client.loop_forever()
 
     def on_message(self,client,userdata,msg):
@@ -49,7 +50,10 @@ class InfluxAdapter():
         processname = datadict['processname']
 
         datapoint = self.create_json_dict(timestamp,data,processname,'traces')
-        self.insert([datapoint])
+        try:
+            self.insert([datapoint])
+        except Exception as e:
+            print(e.message)
 
 
     def create_json_dict(self,timestamp,data,processname,measurement):
