@@ -43,7 +43,7 @@ class InfluxAdapter():
     def on_message(self,client,userdata,msg):
         '''Handles incoming MQTT messages'''
         print("Got new message: {0}".format(str(msg)))
-        datadict = simplejson.loads(msg)
+        datadict = simplejson.loads(str(msg.payload,'utf-8'))
 
         timestamp = datadict['timestamp']
         data = datadict['data']
