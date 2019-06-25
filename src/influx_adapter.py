@@ -53,7 +53,7 @@ class InfluxAdapter():
         try:
             self.insert([datapoint])
         except Exception as e:
-            print(e.message)
+            print(str(e))
 
 
     def create_json_dict(self,timestamp,data,processname,measurement):

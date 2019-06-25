@@ -54,8 +54,8 @@ class SyscallFormatter(object):
             temp = self.parse(datadict['data'])
             datadict['data'] = temp
 
-            json = json.dumps(datadict)
-            self.client.publish("REFINED",json)
+            json_data = json.dumps(datadict)
+            self.client.publish("REFINED",json_data)
         except Exception as e:
             print("Couldn't decode message, check error {0}".format(type(e)))
         
@@ -77,7 +77,7 @@ class SyscallFormatter(object):
         try:
             self.client.publish(topic,data)
         except Exception as e:
-            print("Failed to publish message with the following error {0}".format(e.message))
+            print("Failed to publish message with the following error {0}".format(str(e)))
 
 
 if __name__ == "__main__":
