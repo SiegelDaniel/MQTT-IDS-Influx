@@ -51,7 +51,9 @@ class SyscallFormatter(object):
         datadict['data'] = temp
 
         json = simplejson.dumps(datadict)
+        print("Publishing message")
         self.client.publish("REFINED",json)
+        print("Published message on refined")
     
     
     def on_connect(self,client,userdata,flags,rc):
