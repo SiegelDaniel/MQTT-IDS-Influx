@@ -45,6 +45,7 @@ class SyscallFormatter(object):
 
     def on_message(self,client,userdata,msg):
         """MQTT Callback function for handling received messages"""
+        decoded_msg = ""
         try:
             #payload is bytes array, decode using utf-8
             decoded_msg  = str(msg.payload,'utf-8')
