@@ -58,13 +58,17 @@ class InfluxAdapter():
 
     def create_json_dict(self,timestamp,data,processname,measurement):
         '''Creates a json style dict as a datapoint to be inserted'''
-        tags   = {'processname':processname}
-        fields = {'systemcall':data}
-        body   = {'measurement':measurement,
-                  'tags':tags,
-                  'time':timestamp,
-                  'fields':fields}
-        return body
+        points = [{
+                "measurement":measurement,
+                "tags": {
+                    "processname": processname
+                },
+                "fields":
+                {
+                    "systemcall": data
+                }
+            }]
+        return points
         
     def on_connect(self,client,userdata,flags,rc):
         print("Subscribing to REFINED")
@@ -74,12 +78,14 @@ class InfluxAdapter():
         '''Takes a list of datapoints created via create_json_dict()
            Inserts these into the InfluxDB.'''
         try:
+            print(type(datapoints))
+            print(datapoints)
             if self.client.write_points(datapoints) == True:
                 print("Inserted for process {0} syscall {1} with time {2}".format(datapoints['processname'],datapoints['systemcall'],datapoints['time']))            
             else:
                 print("Something went wrong")
         except Exception as e:
-            print("{0} occured in insert ".format(str(e)))
+            print("Exception of type {0} in insert. Msg: {1}".format(type(e),str(e)))
 
 if __name__ == "__main__":
     adapter = InfluxAdapter("test.mosquitto.org")
