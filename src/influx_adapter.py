@@ -73,10 +73,13 @@ class InfluxAdapter():
     def insert(self,datapoints):
         '''Takes a list of datapoints created via create_json_dict()
            Inserts these into the InfluxDB.'''
-        if self.client.write_points(datapoints) == True:
-            print("Inserted for process {0} syscall {1} with time {2}".format(datapoints['processname'],datapoints['systemcall'],datapoints['time']))            
-        else:
-            print("Something went wrong")
+        try:
+            if self.client.write_points(datapoints) == True:
+                print("Inserted for process {0} syscall {1} with time {2}".format(datapoints['processname'],datapoints['systemcall'],datapoints['time']))            
+            else:
+                print("Something went wrong")
+        except Exception as e:
+            print("{0} occured in insert ".format(str(e)))
 
 if __name__ == "__main__":
     adapter = InfluxAdapter("test.mosquitto.org")
