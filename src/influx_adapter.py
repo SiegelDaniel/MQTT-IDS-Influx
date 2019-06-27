@@ -51,7 +51,7 @@ class InfluxAdapter():
 
         datapoint = self.create_json_dict(timestamp,data,processname,'traces')
         try:
-            self.insert([datapoint])
+            self.insert(datapoint)
         except Exception as e:
             print(str(e))
 
@@ -81,7 +81,7 @@ class InfluxAdapter():
             print(type(datapoints))
             print(datapoints)
             if self.client.write_points(datapoints,protocol='json') == True:
-                print("Inserted for process {0} syscall {1} with time {2}".format(datapoints['processname'],datapoints['systemcall'],datapoints['time']))            
+                print("Success")           
             else:
                 print("Something went wrong")
         except Exception as e:
