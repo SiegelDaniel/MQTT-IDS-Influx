@@ -80,7 +80,7 @@ class InfluxAdapter():
         try:
             print(type(datapoints))
             print(datapoints)
-            if self.client.write_points(datapoints) == True:
+            if self.client.write_points(datapoints,protocol='json') == True:
                 print("Inserted for process {0} syscall {1} with time {2}".format(datapoints['processname'],datapoints['systemcall'],datapoints['time']))            
             else:
                 print("Something went wrong")
