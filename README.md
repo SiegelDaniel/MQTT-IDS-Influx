@@ -3,5 +3,5 @@
 
 
 
-![alt text](rsrcs/hierarchy.png)
+![alt text](https://raw.githubusercontent.com/SiegelDaniel/MQTT-IDS-Influx/master/rsrcs/hierarchy.png)
 
