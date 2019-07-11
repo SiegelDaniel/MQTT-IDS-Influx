@@ -3,5 +3,5 @@
 
 
 
+![alt text](rsrcs/hierarchy.png)
 
-rsrcs/hierarchy.png
