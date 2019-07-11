@@ -4,5 +4,4 @@
 
 
 
-
-![Hierarchy](rsrsc/hierarchy.png)
+rsrcs/hierarchy.png
