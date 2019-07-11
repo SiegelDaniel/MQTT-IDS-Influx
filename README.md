@@ -4,4 +4,4 @@
 
 
 
-![Hierarchy and components](rsrcs/hierarchy.png)
+
