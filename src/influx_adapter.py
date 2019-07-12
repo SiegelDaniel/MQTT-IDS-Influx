@@ -42,21 +42,41 @@ class InfluxAdapter():
 
     def on_message(self,client,userdata,msg):
         '''Handles incoming MQTT messages'''
-        print("Got new message: {0}".format(str(msg)))
+        if msg.topic == 'REFINED':
+            self.handle_insert(msg)
+        elif msg.topic == 'ANOMALY':
+            self.handle_anomaly(msg)
+
+    def handle_insert(self,msg):
+        '''A handler for messages which were received on the topic REFINED'''
+        print("Got new message on REFINED: {0}".format(str(msg)))
         datadict = simplejson.loads(str(msg.payload,'utf-8'))
 
-        timestamp = datadict['timestamp']
         data = datadict['data']
         processname = datadict['processname']
 
-        datapoint = self.create_json_dict(timestamp,data,processname,'traces')
+        datapoint = self.create_json_dict(data,processname,'traces')
+        try:
+            self.insert(datapoint)
+        except Exception as e:
+            print(str(e))
+
+    def handle_anomaly(self,msg):
+        '''A handler for messages which were received on the topic ANOMALY'''
+        print("Got new message on ANOMALY: {0}".format(str(msg)))
+        datadict = simplejson.loads(str(msg.payload,'utf-8'))
+
+        anomalous_data = datadict['trace']
+        processname = datadict['processname']
+
+        datapoint = self.create_json_dict(anomalous_data,processname,'anomalies')
         try:
             self.insert(datapoint)
         except Exception as e:
             print(str(e))
 
 
-    def create_json_dict(self,timestamp,data,processname,measurement):
+    def create_json_dict(self,data,processname,measurement):
         '''Creates a json style dict as a datapoint to be inserted'''
         points = [{
                 "measurement":measurement,
@@ -73,6 +93,7 @@ class InfluxAdapter():
     def on_connect(self,client,userdata,flags,rc):
         print("Subscribing to REFINED")
         self.mqtt_client.subscribe("REFINED") 
+        self.mqtt_client.subscribe("ANOMALY")
 
     def insert(self,datapoints):
         '''Takes a list of datapoints created via create_json_dict()
