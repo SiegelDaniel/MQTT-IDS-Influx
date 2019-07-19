@@ -17,17 +17,31 @@
 #https://www.python.org/dev/peps/pep-0008/
 
 import paho.mqtt.client as mqtt
+import sqlite3
 
 class BoSC(object):
     """Implements Bags of SystemCalls as mentioned in the README.md"""
     
-    def __init__(self,windowsize):
+    def __init__(self,windowsize,BROKER_IP):
         self.WINDOW_SIZE = windowsize
+
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.client.on_log     = self.on_log
 
+        self.DB_CURSOR     = None
+        self.DB_CONNECTION = None
+        self.DB_PW         = None
+        self.DB_HOST       = None
+
+        self.syscall_LUT   = {}
+        self.sliding_window= []
+
+        self.load_lookup_table()
+        self.validate_database()
+        self.client.connect()
+        self.client.loop_forever(BROKER_IP)
 
     def on_connect(self,client,userdata,flags,rc):
         """Consists of actions to take when the connection is established."""
@@ -38,6 +52,42 @@ class BoSC(object):
         """Uses the built-in logger to output errors and events of interest"""
         print("log: ",buf)
 
+    def connect_database(self,path):
+        """Connects to the database and established a cursor and a connection"""
+        try:
+            self.DB_CONNECTION = sqlite3.connect(path)
+            self.DB_CURSOR = DB_CONNECTION.cursor()
+        except Exception as e:
+            print(str(e), "couldn't connect to database at {0}".format(str(path)))
+
+    def load_lookup_table(self):
+        """Loads the systemcall LUT from a json file. 
+        The file needs to fit the criteria mentioned in the paper which is linked in the README."""
+        with open('data.txt') as json_file:
+            self.syscall_LUT = json.load(json_file)
+
+    def validate_database(self):
+        """Primarily checks whether the tables needed are present in the database. 
+        Constructs them if not.""""
+        query = "CREATE TABLE IF NOT EXISTS BoSC (BAGS TEXT PRIMARY KEY);"
+        try:
+            self.DB_CURSOR.execute(_build_creation_query(WINDOW_SIZE))
+            self.DB_CONNECTION.commit()
+        except Exception as e:
+            print(str(e)," during database validation")
+
     def on_message(self,client,userdata,msg):
         '''Handles incoming MQTT messages'''
+        if len(self.sliding_window) == self.WINDOW_SIZE:
+            #construct BoSC from window, delete first, append last
+        elif len(self.sliding_window) < self.WINDOW_SIZE:
+            datadict = simplejson.loads(str(msg.payload,'utf-8'))
+            data = datadict['data']
+            processname = datadict['processname']
+            self.sliding_window.append(data)
+
+    def construct_BoSC(self):
+        '''Constructs a Bag of SystemCalls as described in the paper linked in the README.
+        Utilizes self.sliding_window in combination with the syscall_LUT.'''
+        
 

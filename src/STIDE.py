@@ -115,10 +115,6 @@ def on_message(client, userdata, msg):
     
     logging.info("on_message: Received new message!")
     logging.debug("on_message: Received {0}".format(str(msg.payload)))
-    from lxml import etree
-    xml_string = msg.payload
-    root = etree.fromstring(xml_string)
-    
 
     datadict = simplejson.loads(str(msg.payload,'utf-8'))
 
