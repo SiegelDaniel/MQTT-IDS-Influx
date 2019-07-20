@@ -66,6 +66,13 @@ class BoSC(object):
         The file needs to fit the criteria mentioned in the paper which is linked in the README."""
         with open('data.txt') as json_file:
             self.syscall_LUT = simplejson.load(json_file)
+        temporary = {}
+        counter = 0
+        #sorts the unordered dictionary and creates a mapping of syscalls to their indexes
+        for key in sorted(self.syscall_LUT, key = self.syscall_LUT.get):
+            temporary[key] = counter
+            counter += 1
+        self.syscall_LUT = temporary
 
     def validate_database(self):
         """Primarily checks whether the tables needed are present in the database. 
@@ -94,6 +101,19 @@ class BoSC(object):
 
     def construct_BoSC(self):
         '''Constructs a Bag of SystemCalls as described in the paper linked in the README.
-        Utilizes self.sliding_window in combination with the syscall_LUT.'''
-        
+        Utilizes self.sliding_window in combination with the syscall_LUT.
+        Returns a list of integers'''
+        bag_size = len(self.syscall_LUT.keys())
+        #note bag must contain indexes for all keys and for "other"
+        bag = [None] * bag_size+1
+        for syscall in self.sliding_window:
+            try:
+                index = self.syscall_LUT[syscall]
+                bag[index] += 1 #unsafe, change to atomic
+            except KeyError:
+                #key not found, append to "other"
+                bag[-1] += 1 #unsafe, change to atomic
+
+        return bag
+
 
