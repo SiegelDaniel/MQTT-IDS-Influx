@@ -18,6 +18,7 @@
 
 import paho.mqtt.client as mqtt
 import sqlite3
+import simplejson
 
 class BoSC(object):
     """Implements Bags of SystemCalls as mentioned in the README.md"""
@@ -56,7 +57,7 @@ class BoSC(object):
         """Connects to the database and established a cursor and a connection"""
         try:
             self.DB_CONNECTION = sqlite3.connect(path)
-            self.DB_CURSOR = DB_CONNECTION.cursor()
+            self.DB_CURSOR = self.DB_CONNECTION.cursor()
         except Exception as e:
             print(str(e), "couldn't connect to database at {0}".format(str(path)))
 
@@ -64,26 +65,31 @@ class BoSC(object):
         """Loads the systemcall LUT from a json file. 
         The file needs to fit the criteria mentioned in the paper which is linked in the README."""
         with open('data.txt') as json_file:
-            self.syscall_LUT = json.load(json_file)
+            self.syscall_LUT = simplejson.load(json_file)
 
     def validate_database(self):
         """Primarily checks whether the tables needed are present in the database. 
-        Constructs them if not.""""
+        Constructs them if not."""
         query = "CREATE TABLE IF NOT EXISTS BoSC (BAGS TEXT PRIMARY KEY);"
         try:
-            self.DB_CURSOR.execute(_build_creation_query(WINDOW_SIZE))
+            self.DB_CURSOR.execute(query))
             self.DB_CONNECTION.commit()
         except Exception as e:
             print(str(e)," during database validation")
 
     def on_message(self,client,userdata,msg):
         '''Handles incoming MQTT messages'''
+
+        datadict = simplejson.loads(str(msg.payload,'utf-8'))
+        data = datadict['data']
+        processname = datadict['processname']
+
         if len(self.sliding_window) == self.WINDOW_SIZE:
+            self.construct_BoSC()
+            self.sliding_window = self.sliding_window[1:]
+            self.sliding_window.append(data)
             #construct BoSC from window, delete first, append last
         elif len(self.sliding_window) < self.WINDOW_SIZE:
-            datadict = simplejson.loads(str(msg.payload,'utf-8'))
-            data = datadict['data']
-            processname = datadict['processname']
             self.sliding_window.append(data)
 
     def construct_BoSC(self):
