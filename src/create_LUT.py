@@ -26,8 +26,11 @@ class LUTCreator(object):
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.client.on_log     = self.on_log
+        
 
         self.LUT  = {}
+
+        self.client.connect(BROKER_IP)
         self.client.loop_forever()
 
     def on_connect(self,client,userdata,flags,rc):
