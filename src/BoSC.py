@@ -65,7 +65,7 @@ class BoSC(object):
     def load_lookup_table(self):
         """Loads the systemcall LUT from a json file. 
         The file needs to fit the criteria mentioned in the paper which is linked in the README."""
-        with open('data.txt') as json_file:
+        with open('data.json') as json_file:
             self.syscall_LUT = simplejson.load(json_file)
         temporary = {}
         counter = 0
