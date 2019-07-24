@@ -52,4 +52,7 @@ class LUTCreator(object):
 
         with open('data.json', 'w') as f:
             simplejson.dump(self.LUT, f)
+
+if __name__ == "__main__":
+    LUT = LUTCreator("test.mosquitto.org")
     
