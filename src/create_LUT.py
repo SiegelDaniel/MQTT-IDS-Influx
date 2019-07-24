@@ -21,13 +21,16 @@ import paho.mqtt.client as mqtt
 class LUTCreator(object):
 
     def __init__(self,BROKER_IP):
-        self.BROKER_IP = BROKER_IP
-        self.client = mqtt.Client()
-        self.client.on_connect = self.on_connect
-        self.client.on_message = self.on_message
-        self.client.on_log     = self.on_log
+        try:
+            self.BROKER_IP = BROKER_IP
+            self.client = mqtt.Client()
+            self.client.on_connect = self.on_connect
+            self.client.on_message = self.on_message
+            self.client.on_log     = self.on_log
 
-        self.LUT  = {}
+            self.LUT  = {}
+        except Exception as e:
+            print("Error in init")
 
     def on_connect(self,client,userdata,flags,rc):
         """Consists of actions to take when the connection is established."""
