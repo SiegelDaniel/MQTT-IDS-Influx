@@ -171,13 +171,11 @@ def insert(processinfo,syscalls):
     try:
         DB_CURSOR.execute(SQL_STATEMENT,tuple(syscalls))
         DB_CONNECTION.commit()
-        logging.info("on_message: Insert into DB successfull")
-        logging.debug("on_message: Inserted {0} into DB successfully".format(str(syscalls)))
     except Exception as e:
         if isinstance(e,sqlite3.IntegrityError):
             pass
         else:
-            logging.critical("Exception during insert, see error message: \n {0}".format(str(e)))
+            print("Exception during insert {0}".format(str(e)))
 
 
 def STIDE(to_compare):

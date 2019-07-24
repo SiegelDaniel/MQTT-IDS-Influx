@@ -23,7 +23,7 @@ import simplejson
 class BoSC(object):
     """Implements Bags of SystemCalls as mentioned in the README.md"""
     
-    def __init__(self,windowsize,BROKER_IP):
+    def __init__(self,windowsize,BROKER_IP,learning_mode):
         self.WINDOW_SIZE = windowsize
 
         self.client = mqtt.Client()
@@ -38,11 +38,12 @@ class BoSC(object):
 
         self.syscall_LUT   = {}
         self.sliding_window= []
+        self.LEARNING_MODE = learning_mode
 
         self.load_lookup_table()
         self.validate_database()
-        self.client.connect()
-        self.client.loop_forever(BROKER_IP)
+        self.client.connect(BROKER_IP)
+        self.client.loop_forever()
 
     def on_connect(self,client,userdata,flags,rc):
         """Consists of actions to take when the connection is established."""
@@ -79,7 +80,7 @@ class BoSC(object):
         Constructs them if not."""
         query = "CREATE TABLE IF NOT EXISTS BoSC (BAGS TEXT PRIMARY KEY);"
         try:
-            self.DB_CURSOR.execute(query))
+            self.DB_CURSOR.execute(query)
             self.DB_CONNECTION.commit()
         except Exception as e:
             print(str(e)," during database validation")
@@ -92,28 +93,62 @@ class BoSC(object):
         processname = datadict['processname']
 
         if len(self.sliding_window) == self.WINDOW_SIZE:
-            self.construct_BoSC()
+            bag = self.construct_BoSC()
             self.sliding_window = self.sliding_window[1:]
             self.sliding_window.append(data)
-            #construct BoSC from window, delete first, append last
+            self.check_and_insert(bag)
         elif len(self.sliding_window) < self.WINDOW_SIZE:
             self.sliding_window.append(data)
 
     def construct_BoSC(self):
         '''Constructs a Bag of SystemCalls as described in the paper linked in the README.
         Utilizes self.sliding_window in combination with the syscall_LUT.
-        Returns a list of integers'''
+        Returns a string representation of a list of integers'''
         bag_size = len(self.syscall_LUT.keys())
         #note bag must contain indexes for all keys and for "other"
         bag = [None] * bag_size+1
         for syscall in self.sliding_window:
             try:
                 index = self.syscall_LUT[syscall]
-                bag[index] += 1 #unsafe, change to atomic
+                temp = bag[index]
+                temp += 1
+                bag[index] = temp
             except KeyError:
                 #key not found, append to "other"
-                bag[-1] += 1 #unsafe, change to atomic
+                temp = bag[-1]
+                temp += 1
+                bag[-1] = temp
 
-        return bag
+        return str(bag)
+
+    def check_and_insert(self,bag):
+        """Checks if a given bag is present in the database. 
+        Does nothing if it is, otherwise publishes an anomaly via MQTT 
+        or inserts it depending on whether learning mode is enabled."""
+        query = "SELECT * FROM BoSC WHERE BAGS = ?"
+        try:
+            self.DB_CURSOR.execute(query,(bag,))
+            db_results = self.DB_CURSOR.fetchall()
+        except Exception as e:
+            db_results = []
+            print("Exception while retrieving data from database {0}".format(str(e)))
+        if db_results == []:
+            if self.LEARNING_MODE:
+                insert_query = "INSERT INTO BoSC(BagS) VALUES (?)"
+                self.DB_CURSOR.execute(insert_query,(bag,))
+                self.DB_CONNECTION.commit()
+            else:
+                self.publish("ANOMALY",bag)
+            
+    def publish(self,topic,data):
+        print("Publishing parsed message")
+        """Using the paho mqtt implementation, publish trace on a certain topic."""
+        try:
+            self.client.publish(topic,data)
+        except Exception as e:
+            print("Failed to publish message with the following error {0}".format(str(e)))
+
+if __name__ == "__main__":
+    classifier = BoSC(10,"test.mosquitto.org",True)
 
 
