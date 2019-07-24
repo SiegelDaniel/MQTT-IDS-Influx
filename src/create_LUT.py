@@ -28,6 +28,7 @@ class LUTCreator(object):
         self.client.on_log     = self.on_log
 
         self.LUT  = {}
+        self.client.loop_forever()
 
     def on_connect(self,client,userdata,flags,rc):
         """Consists of actions to take when the connection is established."""
