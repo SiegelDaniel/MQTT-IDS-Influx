@@ -19,6 +19,7 @@
 import paho.mqtt.client as mqtt
 import sqlite3
 import simplejson
+import sys
 
 class BoSC(object):
     """Implements Bags of SystemCalls as mentioned in the README.md"""
@@ -150,6 +151,11 @@ class BoSC(object):
             print("Failed to publish message with the following error {0}".format(str(e)))
 
 if __name__ == "__main__":
-    classifier = BoSC(10,"test.mosquitto.org",True)
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "--learn":
+            classifier = BoSC(10,"test.mosquitto.org",True)
+        else:
+            classifier = BoSC(10,"test.mosquitto.org",False)
+    
 
 

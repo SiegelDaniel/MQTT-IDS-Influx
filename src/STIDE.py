@@ -21,17 +21,18 @@ import paho.mqtt.client as mqtt
 import sqlite3
 import os
 import simplejson
+import sys
 
 
 class STIDE(object):
 
-    def __init__(self):
+    def __init__(self,storage_mode):
         #CONFIGURATION RELEVANT
         self.DB_USER       = ""
         self.DB_PW         = ""
         self.DB_HOST       = "../Traces.sqlite"
         self.BROKER_IP     = "test.mosquitto.org"
-        self.STORAGE_MODE  = True
+        self.STORAGE_MODE  = storage_mode
         self.WINDOW_SIZE   = 3
 
         #NOT CONFIGURATION RELEVANT
@@ -191,4 +192,9 @@ class STIDE(object):
 
 
 if __name__ == "__main__":
-    stide = STIDE()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "--learn":
+            stide = STIDE(True)
+        else:
+            stide = STIDE(False)
+    
