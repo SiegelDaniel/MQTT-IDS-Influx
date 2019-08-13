@@ -14,4 +14,4 @@ paho-mqtt
 rfc3339  
 simplejson  
 psutil  
-
+influxdb
