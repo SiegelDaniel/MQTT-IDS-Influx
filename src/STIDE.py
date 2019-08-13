@@ -164,11 +164,11 @@ class STIDE(object):
         else:
             if self.DB_CONNECTION is not None:
                 if self.STORAGE_MODE == True:
-                    self.insert(processname,call_list)
-                    call_list = call_list[1:]
+                    self.insert(processname,self.call_list)
+                    self.call_list = self.call_list[1:]
                 else:
-                    self.STIDE(call_list)
-                    call_list = call_list[1:]
+                    self.STIDE(self.call_list)
+                    self.call_list = self.call_list[1:]
 
     def on_log(self,client, userdata, level, buf):
         """Uses the built-in logger to output errors and events of interest"""
