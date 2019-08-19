@@ -91,7 +91,7 @@ class BoSC(object):
 
         datadict = simplejson.loads(str(msg.payload,'utf-8'))
         data = datadict['data']
-        processname = datadict['processname']
+        #processname = datadict['processname']
         #TODO utilize processname to create a table of Bags for each individual process
 
         if len(self.sliding_window) == self.WINDOW_SIZE:
