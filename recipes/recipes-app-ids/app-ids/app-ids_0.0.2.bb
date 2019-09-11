@@ -53,7 +53,6 @@ do_install () {
   install -m 0644 ${S}/src/syscall_tracer.py ${D}${bindir}/app-ids/src
   install -m 0644 ${S}/src/stide_syscall_formatter.py ${D}${bindir}/app-ids/src
   install -m 0644 ${S}/src/stide.py ${D}${bindir}/app-ids/src
-  install -m 0644 ${S}/src/config.xml ${D}${bindir}/app-ids/src
 
 #  install -d ${D}${bindir}/app-ids/src/xml_validation
 #  install -m 0644 ${S}/src/xml_validation/configuration_file.xsd ${D}${bindir}/app-ids/src/xml_validation/configuration_file.xsd
