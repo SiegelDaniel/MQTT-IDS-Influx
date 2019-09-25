@@ -1,7 +1,7 @@
 import requests
 import threading
-import time
 import paho.mqtt.client as mqtt
+import time
 
 class Attack(object):
 
@@ -19,13 +19,12 @@ class Attack(object):
             time.sleep(2)
             r = requests.get('https://heise.de')
 
-    def on_connect(self):
-        print("Connected to MQTT broker at test.mosquitto.org")
+    def on_connect(self,client, userdata, flags, msg):
         self.client.subscribe("ATTACK")
         thread = threading.Thread(target=self.poll_heise)
         thread.start()
     
-    def on_message(self):
+    def on_message(self,client, userdata, msg):
         for i in range(1,80):
             thread = threading.Thread(target=self.write_file,args=(i,))
             thread.start()
