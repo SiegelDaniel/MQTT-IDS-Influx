@@ -1,0 +1,14 @@
+[Unit]
+Description = Service to fill the bags of system calls database and perform the BoSC approach
+#ConditionPathExists = /usr/bin/app-ids/src/config.xml
+Requires = mosquitto.service stide_syscall_formatter.service syscall_tracer.service
+After = mosquitto.service
+Before = stide_syscall_formatter.service syscall_tracer.service
+ 
+[Service]
+Type=simple
+WorkingDirectory=/usr/bin/app-ids/src
+ExecStart =/usr/bin/python3 /usr/bin/app-ids/src/BoSC.py
+
+[Install]
+WantedBy = multi-user.target
