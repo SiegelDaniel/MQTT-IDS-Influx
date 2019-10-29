@@ -29,11 +29,15 @@ import psutil
 class SyscallTracer(object):
 
     def __init__(self,PID,PNAME="",BROKER_IP="test.mosquitto.org"):
-        self.PID = PID
-        self.PNAME = PNAME
-        self.BROKER_IP = BROKER_IP
+        self.config = self.load_config("./config.json")
+
+        self.PID = self.get_config("PID")
+        self.PNAME = self.get_config("PNAME")
+        self.BROKER_IP = self.get_config("BROKER_IP")
+        self.QOS = self.get_config("QOS")
 
         self.client = mqtt.Client()
+        
         try:
             self.client.connect(self.BROKER_IP)
         except Exception:
@@ -98,7 +102,19 @@ class SyscallTracer(object):
             'processname': self.PNAME
         }
 
-        self.client.publish('TRACED',simplejson.dumps(datadict))
+        self.client.publish('TRACED',simplejson.dumps(datadict),qos=self.QOS)
+
+    def load_config(self,JSON_PATH):
+        """Loads config from a given JSON file, extracts the relevant config parameters"""
+        with open(JSON_PATH) as json_file:
+            data = simplejson.load(json_file)
+            config = data['syscall_tracer']
+            return config
+
+    def get_config(self,key):
+        """Extracts a configuration key from the config if it exists"""
+        if key in self.config:
+            return self.config["key"]
 
 if __name__ == "__main__":
     Tracer = SyscallTracer("1","","test.mosquitto.org")

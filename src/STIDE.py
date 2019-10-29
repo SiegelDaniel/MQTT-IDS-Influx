@@ -26,14 +26,16 @@ import sys
 
 class STIDE(object):
 
-    def __init__(self,storage_mode):
+    def __init__(self):
+        self.config = self.load_config("./config.json")
+
         #CONFIGURATION RELEVANT
-        self.DB_USER       = ""
-        self.DB_PW         = ""
-        self.DB_HOST       = "../Traces.sqlite"
-        self.BROKER_IP     = "test.mosquitto.org"
-        self.STORAGE_MODE  = storage_mode
-        self.WINDOW_SIZE   = 3
+        self.DB_USER       = self.get_config("DB_USER")
+        self.DB_PW         = self.get_config("DB_PW")
+        self.DB_HOST       = self.config("DB_HOST")#"../Traces.sqlite"
+        self.BROKER_IP     = self.config("BROKER_IP")
+        self.STORAGE_MODE  = self.config("STORAGE_MODE")
+        self.WINDOW_SIZE   = self.config("WINDOW_SIZE")
 
         #NOT CONFIGURATION RELEVANT
         self.DB_CURSOR     = None
@@ -189,6 +191,18 @@ class STIDE(object):
             print("Established DB connection")
         except sqlite3.Error as e:
             print("Error connecting to DB: {0}".format(str(e)))
+    
+    def load_config(self,JSON_PATH):
+        """Loads config from a given JSON file, extracts the relevant config parameters"""
+        with open(JSON_PATH) as json_file:
+            data = simplejson.load(json_file)
+            config = data['stide']
+            return config
+
+    def get_config(self,key):
+        """Extracts a configuration key from the config if it exists"""
+        if key in self.config:
+            return self.config["key"]
 
 
 if __name__ == "__main__":

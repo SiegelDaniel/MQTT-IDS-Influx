@@ -1,0 +1,36 @@
+{
+    "stide": {
+      "DB_USER": "",
+      "DB_PW": "",
+      "DB_HOST": "../Traces.sqlite",
+      "BROKER_IP": "test.mosquitto.org",
+      "STORAGE_MODE": "True",
+      "WINDOW_SIZE": 3
+    },
+    "syscall_tracer": {
+      "BROKER_IP": "test.mosquitto.org",
+      "PID": 1,
+      "PNAME": "",
+      "QOS": 1
+    },
+    "stide_syscall_formatter": {
+      "BROKER_IP": "test.mosquitto.org"
+    },
+    "BOSC": {
+      "DB_USER": "",
+      "DB_PW": "",
+      "DB_HOST": "../Traces.sqlite",
+      "BROKER_IP": "test.mosquitto.org",
+      "LEARNING_MODE": "True",
+      "WINDOW_SIZE": 3
+    },
+    "influx_adapter": {
+      "BROKER_IP": "test.mosquitto.org",
+      "INFLUX_HOST": "",
+      "INFLUX_PORT": "",
+      "INFLUX_MSRMNT": ""
+    },
+    "create_LUT": {
+      "BROKER_IP": "test.mosquitto.org"
+    }
+  }

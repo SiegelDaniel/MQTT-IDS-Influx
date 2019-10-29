@@ -25,6 +25,9 @@ class SyscallFormatter(object):
     
     def __init__(self,BROKER_IP="test.mosquitto.org"):
         '''Takes BROKER IP as string as argument'''
+        self.config = self.load_config("./config.json")
+        self.BROKER_IP = self.get_config("BROKER_IP")
+
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
@@ -79,6 +82,17 @@ class SyscallFormatter(object):
         except Exception as e:
             print("Failed to publish message with the following error {0}".format(str(e)))
 
+    def load_config(self,JSON_PATH):
+        """Loads config from a given JSON file, extracts the relevant config parameters"""
+        with open(JSON_PATH) as json_file:
+            data = simplejson.load(json_file)
+            config = data['stide_syscall_formatter']
+            return config
+
+    def get_config(self,key):
+        """Extracts a configuration key from the config if it exists"""
+        if key in self.config:
+            return self.config["key"]
 
 if __name__ == "__main__":
      SyscallFormatter =  SyscallFormatter("test.mosquitto.org")
