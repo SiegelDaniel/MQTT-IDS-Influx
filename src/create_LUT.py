@@ -17,11 +17,19 @@
 #https://www.python.org/dev/peps/pep-0008/
 import simplejson
 import paho.mqtt.client as mqtt
+import config_handler
 
 class LUTCreator(object):
 
     def __init__(self,BROKER_IP):
-        self.BROKER_IP = BROKER_IP
+
+        #CONFIG
+        self.cfg_handler = config_handler.config_loader("./config.json")
+        self.config      = self.cfg_handler.get_config("LUTCREATOR")
+
+        self.BROKER_IP = self.cfg_handler.get_config_point("BROKER_IP",self.config)
+        #CONFIG END
+        
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message

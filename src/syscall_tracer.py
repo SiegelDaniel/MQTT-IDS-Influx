@@ -24,17 +24,20 @@ from datetime import datetime
 import rfc3339
 import simplejson
 import psutil
+import config_handler
 
 
 class SyscallTracer(object):
 
     def __init__(self,PID,PNAME="",BROKER_IP="test.mosquitto.org"):
-        self.config = self.load_config("./config.json")
 
-        self.PID = self.get_config("PID")
-        self.PNAME = self.get_config("PNAME")
-        self.BROKER_IP = self.get_config("BROKER_IP")
-        self.QOS = self.get_config("QOS")
+        self.cfg_handler = config_handler.config_loader("./config.json")
+        self.config      = self.cfg_handler.get_config("SYSCALL_TRACER")
+
+        self.PID        = self.cfg_handler.get_config_point("PID",self.config)
+        self.PNAME      = self.cfg_handler.get_config_point("PNAME",self.config)
+        self.BROKER_IP  = self.cfg_handler.get_config_point("BROKER_IP",self.config)
+        self.QOS        = self.cfg_handler.get_config_point("QOS",self.config)
 
         self.client = mqtt.Client()
         

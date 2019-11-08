@@ -20,12 +20,20 @@ import paho.mqtt.client as mqtt
 import sqlite3
 import simplejson
 import sys
+import config_handler
 
 class BoSC(object):
     """Implements Bags of SystemCalls as mentioned in the README.md"""
     
-    def __init__(self,windowsize,BROKER_IP,learning_mode):
-        self.WINDOW_SIZE = windowsize
+    def __init__(self):
+
+        self.cfg_handler = config_handler.config_loader("./config.json")
+        self.config      = self.cfg_handler.get_config("BOSC")
+
+        self.WINDOW_SIZE = self.cfg_handler.get_config_point("WINDOW_SIZE",self.config)
+        self.DB_PW         =  self.cfg_handler.get_config_point("DB_PW",self.config)
+        self.DB_HOST       =  self.cfg_handler.get_config_point("DB_HOST",self.config)
+        self.BROKER_IP     =  self.cfg_handler.get_config_point("BROKER_IP",self.config)
 
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
@@ -34,16 +42,15 @@ class BoSC(object):
 
         self.DB_CURSOR     = None
         self.DB_CONNECTION = None
-        self.DB_PW         = None
-        self.DB_HOST       = None
+        
 
         self.syscall_LUT   = {}
         self.sliding_window= []
-        self.LEARNING_MODE = learning_mode
+        self.LEARNING_MODE = self.WINDOW_SIZE = self.cfg_handler.get_config_point("LEARNING_MODE",self.config)
 
         self.load_lookup_table()
         self.validate_database()
-        self.client.connect(BROKER_IP)
+        self.client.connect(self.BROKER_IP)
         self.client.loop_forever()
 
     def on_connect(self,client,userdata,flags,rc):
@@ -151,11 +158,7 @@ class BoSC(object):
             print("Failed to publish message with the following error {0}".format(str(e)))
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "--learn":
-            classifier = BoSC(10,"test.mosquitto.org",True)
-        else:
-            classifier = BoSC(10,"test.mosquitto.org",False)
+    classifier = BoSC()
     
 
 

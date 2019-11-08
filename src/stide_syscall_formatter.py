@@ -20,20 +20,23 @@
 import paho.mqtt.client as mqtt
 import time
 import json
+import config_handler
 
 class SyscallFormatter(object):
     
     def __init__(self,BROKER_IP="test.mosquitto.org"):
         '''Takes BROKER IP as string as argument'''
-        self.config = self.load_config("./config.json")
-        self.BROKER_IP = self.get_config("BROKER_IP")
+        self.cfg_handler = config_handler.config_loader("./config.json")
+        self.config      = self.cfg_handler.get_config("STIDE_SYSCALL_FORMATTER")
+
+        self.BROKER_IP = self.cfg_handler.get_config_point("BROKER_IP",self.config)
 
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         try:
-            self.client.connect(BROKER_IP)
-            print("Connected to Broker at {0}".format(BROKER_IP))
+            self.client.connect(self.BROKER_IP)
+            print("Connected to Broker at {0}".format(self.BROKER_IP))
         except Exception:
             print("BROKER connection failed")
             raise SystemExit(0)
@@ -82,17 +85,6 @@ class SyscallFormatter(object):
         except Exception as e:
             print("Failed to publish message with the following error {0}".format(str(e)))
 
-    def load_config(self,JSON_PATH):
-        """Loads config from a given JSON file, extracts the relevant config parameters"""
-        with open(JSON_PATH) as json_file:
-            data = simplejson.load(json_file)
-            config = data['stide_syscall_formatter']
-            return config
-
-    def get_config(self,key):
-        """Extracts a configuration key from the config if it exists"""
-        if key in self.config:
-            return self.config["key"]
 
 if __name__ == "__main__":
      SyscallFormatter =  SyscallFormatter("test.mosquitto.org")

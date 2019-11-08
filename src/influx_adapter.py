@@ -19,12 +19,18 @@
 from influxdb import InfluxDBClient
 import paho.mqtt.client as mqtt
 import simplejson
+import config_handler
 
 class InfluxAdapter():
     '''Adapter to pipe results from MQTT IDS to InfluxDB for visualization purposes'''
     def __init__(self,BROKER_IP='test.mosquitto.org'):
-        self.BROKER_IP = BROKER_IP
 
+        #CONFIG
+        self.cfg_handler = config_handler.config_loader("./config.json")
+        self.config      = self.cfg_handler.get_config("INFLUX_ADAPTER")
+
+        self.BROKER_IP   = self.cfg_handler.get_config_point("BROKER_IP",self.config)
+        #CONFIG
         self.client = InfluxDBClient(host='68.183.66.50',port=8086)
         self.client.switch_database('Traces')
 

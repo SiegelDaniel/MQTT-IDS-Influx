@@ -22,20 +22,24 @@ import sqlite3
 import os
 import simplejson
 import sys
+import config_handler
 
 
 class STIDE(object):
 
     def __init__(self):
-        self.config = self.load_config("./config.json")
+
+        self.cfg_handler = config_handler.config_loader("./config.json")
+        self.config      = self.cfg_handler.get_config("STIDE")
+
 
         #CONFIGURATION RELEVANT
-        self.DB_USER       = self.get_config("DB_USER")
-        self.DB_PW         = self.get_config("DB_PW")
-        self.DB_HOST       = self.config("DB_HOST")#"../Traces.sqlite"
-        self.BROKER_IP     = self.config("BROKER_IP")
-        self.STORAGE_MODE  = self.config("STORAGE_MODE")
-        self.WINDOW_SIZE   = self.config("WINDOW_SIZE")
+        self.DB_USER       = self.cfg_handler.get_config_point("DB_USER",self.config)
+        self.DB_PW         = self.cfg_handler.get_config_point("DB_PW",self.config)
+        self.DB_HOST       = self.cfg_handler.get_config_point("DB_HOST",self.config)#"../Traces.sqlite"
+        self.BROKER_IP     = self.cfg_handler.get_config_point("BROKER_IP",self.config)
+        self.STORAGE_MODE  = self.cfg_handler.get_config_point("STORAGE_MODE",self.config)
+        self.WINDOW_SIZE   = self.cfg_handler.get_config_point("WINDOW_SIZE",self.config)
 
         #NOT CONFIGURATION RELEVANT
         self.DB_CURSOR     = None
@@ -191,24 +195,14 @@ class STIDE(object):
             print("Established DB connection")
         except sqlite3.Error as e:
             print("Error connecting to DB: {0}".format(str(e)))
-    
-    def load_config(self,JSON_PATH):
-        """Loads config from a given JSON file, extracts the relevant config parameters"""
-        with open(JSON_PATH) as json_file:
-            data = simplejson.load(json_file)
-            config = data['stide']
-            return config
 
-    def get_config(self,key):
-        """Extracts a configuration key from the config if it exists"""
-        if key in self.config:
-            return self.config["key"]
+
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == "--learn":
-            stide = STIDE(True)
+            stide = STIDE()
         else:
-            stide = STIDE(False)
+            stide = STIDE()
     
