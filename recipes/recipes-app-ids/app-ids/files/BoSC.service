@@ -1,9 +1,9 @@
 [Unit]
-Description = Service to fill the bags of system calls database and perform the BoSC approach
-#ConditionPathExists = /usr/bin/app-ids/src/config.xml
-Requires = mosquitto.service stide_syscall_formatter.service syscall_tracer.service
+Description = Service to perform the Bags of System Calls approach on intrusion detection 
+ConditionPathExists = /usr/bin/app-ids/src/
+Requires = mosquitto.service stide_syscall_formatter.service syscall_tracer.service stide.service
 After = mosquitto.service
-Before = stide_syscall_formatter.service syscall_tracer.service
+Before = stide_syscall_formatter.service syscall_tracer.service stide.service
  
 [Service]
 Type=simple

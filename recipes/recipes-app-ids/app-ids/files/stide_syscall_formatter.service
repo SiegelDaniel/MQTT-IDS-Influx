@@ -1,8 +1,8 @@
 [Unit]
 Description = Subscribes to mqtt "TRACED" topic, formats the received system calls, and publishes to "REFINED"
-#ConditionPathExists=/usr/bin/app-ids/src/config.xml
+ConditionPathExists=/usr/bin/app-ids/src/config.xml
 Requires= mosquitto.service stide.service syscall_tracer.service
-After = mosquitto.service stide.service BoSC.service
+After = mosquitto.service stide.service
 Before = syscall_tracer.service
  
 [Service]

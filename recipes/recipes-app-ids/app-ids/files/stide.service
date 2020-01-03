@@ -1,6 +1,6 @@
 [Unit]
-Description = Service to fill the system call database and perform the STIDE IDS approach
-#ConditionPathExists = /usr/bin/app-ids/src/config.xml
+Description = Service to fill the system call database and perform STIDE IDS approach
+ConditionPathExists = /usr/bin/app-ids/src/config.xml
 Requires = mosquitto.service stide_syscall_formatter.service syscall_tracer.service
 After = mosquitto.service
 Before = stide_syscall_formatter.service syscall_tracer.service
